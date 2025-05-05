@@ -19,7 +19,8 @@ class Upload extends Base
         
         if (!$file) {
             // 文件不存在，返回错误信息
-            return json(['code' => 500, 'msg' => '未上传文件','data' => '']);
+            $this->error('未上传文件');
+            // return json(['code' => 500, 'msg' => '未上传文件','data' => '']);
         }
 
         // 验证文件并移动到指定目录
