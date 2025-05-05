@@ -38,4 +38,37 @@ class CompetitionRegistrations extends Model
         ];
         return $res;
     }
+
+    public function regList($competition_id, $type, $page, $limit)
+    {   
+        $list = self::alias('c')
+            ->field('c.id, u.nickname, u.sex, u.level_id')
+            ->where('c.competition_id', $competition_id)
+            ->where('c.type', $type)
+            ->where('c.status', 1)
+            ->leftJoin('user u', 'u.openid = c.openid')
+            ->page($page, $limit)
+            ->select()
+            ->toArray();
+        $count = self::alias('c')
+            ->field('count(c.id) as count')
+            ->where('c.competition_id', $competition_id)
+            ->where('c.type', $type)
+            ->where('c.status', 1)
+            ->leftJoin('user u', 'u.openid = c.openid')
+            ->find();
+        $res = [
+            'list' => $list,
+            'count' => $count['count'],
+        ];
+        return $res;
+    }
+
+    public function regCancel($id)
+    {   
+        $res = self::where('id', $id)
+            ->save(['status' => 2]);
+        return $res;
+    }
+
 }

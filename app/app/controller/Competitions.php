@@ -34,14 +34,16 @@ class Competitions extends Base
     /**
      * 比赛、活动列表
      * @param type 1-比赛 2-活动
+     * @param date 日期
      * @return array|false
     */
     public function list()
     {
         $type = input('type');
+        $date = input('date', '');
         $page = input('page', 1);
         $limit = input('limit', 20);
-        $res = (new CompetitionsModel())->listType($type, $page, $limit);
+        $res = (new CompetitionsModel())->listType($type, $date, $page, $limit);
         foreach ($res['list'] as &$val) {
             $val['countdown'] = '30天10小时';
         }
@@ -89,6 +91,34 @@ class Competitions extends Base
             (new CompetitionRegistrations())->save($reg);
             $this->success('ok');
         }
+    }
+
+
+    /**
+     * 报名人员列表
+     * @param id 活动、比赛id
+     * @return array|false
+    */
+    public function regList()
+    {
+        $id = input('id');
+        $type = input('type', 1);
+        $page = input('page', 1);
+        $limit = input('limit', 20);
+        $competition = (new CompetitionRegistrations())->regList($id, $type, $page, $limit);
+        $this->success('ok', $competition);
+    }
+
+     /**
+     * 取消报名人员
+     * @param id 列表id
+     * @return array|false
+    */
+    public function regCancel()
+    {
+        $id = input('id');
+        $competition = (new CompetitionRegistrations())->regCancel($id);
+        $this->success('ok');
     }
 
     /**

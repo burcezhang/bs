@@ -47,4 +47,18 @@ class User extends Base
         }
         $this->success('ok', $user);
     }
+
+     /**
+     * 用户积分榜
+     * @param string club_id 俱乐部id
+     * @return array|false
+    */
+    public function scoreList()
+    {
+        $club_id = input('club_id', 1);
+        $page = input('page', 1);
+        $limit = input('limit', 20);
+        $res = (new UserModel)->scoreList($club_id, $page, $limit);
+        $this->success('ok', $res);
+    }
 }
