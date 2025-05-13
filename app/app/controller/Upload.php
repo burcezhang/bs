@@ -32,7 +32,7 @@ class Upload extends Base
         
         if ($saveName) {
             // 文件保存成功，返回文件路径
-            $filePath =  '/'.$saveName;  // https://hrbjltx.com/   http://47.120.28.114/
+            $filePath =  '/storage/'.$saveName;  // https://hrbjltx.com/   http://47.120.28.114/
             $this->success('ok', ['url' => $filePath]);
             // return json(['code' => 200, 'msg' => '上传成功', 'data' => $filePath]);
         } else {

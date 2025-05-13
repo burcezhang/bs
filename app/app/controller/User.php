@@ -3,6 +3,7 @@
 namespace app\app\controller;
 
 use app\backend\model\User as UserModel;
+use think\Request;
 
 class User extends Base
 {
@@ -24,28 +25,40 @@ class User extends Base
 
     /**
      * 修改用户信息
-     * @param string openid 用户openid
-     * @param string nickname 昵称
-     * @param string sex 性别 1：男、2：女
-     * @param string phone 联系电话
      * @param string headimg 头像
+     * @param string nickname 昵称
+     * @param string phone 手机号
      * @return array|false
     */
-    public function updateInfo()
+    public function updateInfo(Request $request)
     {
-        $openid = input('openid');
-        $exit = UserModel::info($openid);
-        $user['openid'] = input('openid');
-        $user['nickname'] = input('nickname');
-        $user['sex'] = input('sex');
-        $user['phone'] = input('phone');
-        $user['headimg'] = input('headimg');
-        if ($exit) {
-            UserModel::where('id', $exit['id'])->update($user);
-        } else {
-            (new UserModel())->save($user);
+        // 获取token
+        $token = $request->header('Authorization');
+        if (empty($token)) {
+            $this->error('请先登录');
         }
-        $this->success('ok', $user);
+
+        // 获取POST数据
+        $jsonData = json_decode(file_get_contents('php://input'), true);
+        
+        // 根据token查询用户
+        $user = UserModel::where('token', $token)->find();
+        if (!$user) {
+            $this->error('用户不存在');
+        }
+
+        // 更新用户信息
+        $updateData = [
+            'headimg' => $jsonData['headimg'] ?? $user['headimg'],
+            'nickname' => $jsonData['nickname'] ?? $user['nickname'],
+            'phone' => $jsonData['phone'] ?? $user['phone'],
+            'update_time' => time()
+        ];
+
+        // 更新用户信息
+        UserModel::where('id', $user['id'])->update($updateData);
+
+        $this->success('更新成功', $updateData);
     }
 
      /**
